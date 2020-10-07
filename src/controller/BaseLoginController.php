@@ -25,9 +25,10 @@ use think\captcha\facade\Captcha;
 use think\facade\Db;
 class BaseLoginController
 {
+    protected $user_data;
     protected $middleware = [\think\middleware\SessionInit::class];
     public function __construct(){
-
+        $this->user_data = Db::name('users');
     }
     public function login(){
         if(request()->isPost()){
@@ -90,6 +91,6 @@ class BaseLoginController
      * @return Db
      */
     protected function user_data(){
-        return Db::name('users');
+        return $this->user_data;
     }
 }
