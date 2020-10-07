@@ -1,0 +1,22 @@
+{
+    "name": "hahadu/think-userlogin",
+    "description": "thinkphp6用户登录模块",
+    "type": "think-extend",
+    "require": {
+        "php": ">=7.1",
+        "topthink/think-captcha": "^3.0"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "hahadu",
+            "email": "582167246@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hahadu\\ThinkUserLogin\\": "src/"
+        }
+    },
+        "minimum-stability": "dev"
+}
