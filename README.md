@@ -1,16 +1,21 @@
 # think-userlogin
 thinkphp用户登录模块
-
+* 用户登录
+* 用户注册
+* > 验证邮箱注册
+  
 安装：composer require hahadu/think-userlogin
 
-依赖项 ： thinkphp验证码模块 topthink/think-captcha
+依赖项 ： 
+>* thinkphp验证码模块 topthink/think-captcha
+>* 发送验证邮件 phpmailer/phpmailer
 
 做了用户名、密码、验证码的基本验证和登录成功后的session创建
 
 使用：在应用创建一个登录控制器
 
-```
-用户登录模块控制器Login.php
+```php
+//用户登录模块控制器Login.php
 namespace app\user\controller;
 use Hahadu\ThinkUserLogin\controller\BaseLoginController;
 use think\facade\View;
@@ -46,7 +51,7 @@ class Login extends BaseLoginController
 默认用户表为users
 
 如需指定其他用户表只需在当前控制器中创建一个user_data()即可：
-```puml
+```php
 
 protected function user_data()
     {
@@ -59,7 +64,7 @@ protected function user_data()
 头像为图片链接地址 
 ```
 如需自己定义验证码，只需按照tp6的验证码文档操作即可
-```puml
+```php
     public function verify()
     { 
         /*
@@ -73,6 +78,8 @@ protected function user_data()
 * 100004 退出登录成功
 * 420103 登录失败
 * 420104 退出登录失败
-* 420105 验证码为空
-* 420106 账号为空
-* 420107 密码为空
+* 420107 邮箱验证失败
+* 420109 验证码必填
+* 420108 用户名必填
+* 420110 密码必填
+* 420111 重复密码错误
