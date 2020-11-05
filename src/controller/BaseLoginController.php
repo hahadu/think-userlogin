@@ -55,7 +55,7 @@ class BaseLoginController
                 if(is_object($data)){
                     $data = $data->toArray();
                 }
-                if(password_verify(md5($post_data['password']),$data['password'])){
+                if(StringHelper::password($post_data['password'],$data['password'])){
                     $session = array(
                         'id' =>$data['id'],
                         'username'=>$data['username'],
@@ -101,7 +101,9 @@ class BaseLoginController
         if(!$check->isEmpty()){
             $result = 420112; //用户名已存在
         }else{
-            $data['password'] = password_hash(md5($data['password']),PASSWORD_BCRYPT,['cost' => 11]);
+            $data['password'] = StringHelper::password($data['password']);
+            $data['last_login_ip'] = request()->ip();
+            $data['register_time'] = time();
             $result = $this->users->addData($data);
             if($result){
                 $result = 100002; //注册成功
@@ -114,10 +116,10 @@ class BaseLoginController
      * 发送邮箱验证码到用户邮箱
      * @return false|int|string|null
      */
-    protected function get_email_code(){
+    public function get_email_code(){
         $email = request()->post('email');
         $smtp = config('smtp');
-        if($this->send_email($email,'注册验证码',$this->mail_verify,$smtp)){
+        if(send_email($email,'注册验证码',$this->mail_verify,$smtp)){
             $hash = password_hash($this->mail_verify,PASSWORD_BCRYPT,['cost' => 12]);
             Session::set('email_verify.key',$hash);
             Session::set('email_verify.time',time());

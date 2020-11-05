@@ -5,6 +5,7 @@
     "require": {
         "php": ">=7.1",
         "topthink/think-captcha": "^3.0",
+        "hahadu/helper-function": "^0.6.0",
         "phpmailer/phpmailer": "^6.1"
     },
     "license": "Apache-2.0",

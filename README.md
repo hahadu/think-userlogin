@@ -2,7 +2,7 @@
 thinkphp用户登录模块
 * 用户登录
 * 用户注册
-* > 验证邮箱注册
+>* 验证邮箱注册
   
 安装：composer require hahadu/think-userlogin
 
