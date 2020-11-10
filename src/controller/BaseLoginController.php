@@ -18,7 +18,7 @@
 declare (strict_types = 1);
 
 namespace Hahadu\ThinkUserLogin\controller;
-use app\user\model\Users;
+use Hahadu\ImAdminThink\model\Users;
 use Hahadu\Helper\StringHelper;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
