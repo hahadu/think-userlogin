@@ -18,14 +18,13 @@
 declare (strict_types = 1);
 
 namespace Hahadu\ThinkUserLogin\controller;
-use Hahadu\ImAdminThink\model\Users;
 use Hahadu\Helper\StringHelper;
+use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
 use think\exception\ValidateException;
+use think\facade\Config;
 use think\facade\Session;
-use think\captcha\facade\Captcha;
-use think\facade\Db;
 class BaseLoginController
 {
     use BaseUsersTrait;
@@ -34,10 +33,14 @@ class BaseLoginController
     protected $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     protected $mail_verify;
     protected $users;
+    protected $jwt_login;
+    private $user_database;
 
     public function __construct(){
         $this->mail_verify = StringHelper::create_rand_string(6,$this->chars);
+        $this->user_database = Config::get('login.user_model');
         $this->users = $this->user_data();
+        $this->jwt = Config::get('login.JWT');
        // $this->user_login_data = Db::name('users');
     }
     public function login(){
@@ -62,6 +65,20 @@ class BaseLoginController
                         'avatar'=>$data['avatar'],
                     );
                     $result = Session::set('user',$session);
+
+                    if($this->jwt_login==true){
+                        $payloads=[
+                            'uid'=>$data['id'],
+                        ];
+                        $jwt = new JWTBuilder($data['username'],$data['id'],$payloads);
+                        $token = $jwt->token;
+                        $result = [
+                            'code'=>100003,
+                            'token'=> $token,
+                        ];
+                        file_put_contents('token.txt',$token);
+                        return $result;
+                    }
                     if(Session::has('user') or $result){
                         return 100003;
                     }
@@ -129,20 +146,4 @@ class BaseLoginController
         }
     }
 
-    /****
-     * 验证码
-     * @return \think\Response
-     */
-    public function verify()
-    {
-        return Captcha::create();
-    }
-
-    /****
-     * 实例化用户表
-     * @return mixed
-     */
-    protected function user_data(){
-        return new Users();
-    }
 }

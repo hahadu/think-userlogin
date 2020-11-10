@@ -47,8 +47,16 @@ class Login extends BaseLoginController
 }
 
 ```
-
-默认用户表为users
+### 配置
+引入用户表
+* 在config/login.php配置登录信息
+```php
+return [
+    'user_model'=> "\Hahadu\ImAdminThink\model\Users", //用户数据表模型路径
+    'JWT_login' =>true, //是否开启JWT鉴权 true 开启 false关闭
+    'token_name' => 'token' //token表单字段名
+];
+```
 
 如需指定其他用户表只需在当前控制器中创建一个user_data()即可：
 ```php

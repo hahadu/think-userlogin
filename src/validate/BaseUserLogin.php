@@ -11,7 +11,7 @@ class BaseUserLogin extends Validate
      * @var array
      */
     protected $rule = [
-        'captcha|验证码'=>'require|captcha',
+    //    'captcha|验证码'=>'require|captcha',
         'username' => 'require',
         'email' => 'email',
         'password' => 'require|alphaNum',
