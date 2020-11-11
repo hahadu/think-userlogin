@@ -20,6 +20,8 @@ use Hahadu\Helper\StringHelper;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\ValidationData;
+use think\Exception;
+use think\facade\Config;
 
 class JWTBuilder
 {
@@ -35,6 +37,8 @@ class JWTBuilder
     private $nbf;
     protected $sub;
     private $alg_type = 'none';
+    private $iss;
+    private $aud;
     public $token;
 
     /****
@@ -52,6 +56,8 @@ class JWTBuilder
         $this->parser = new Parser();
         $this->validate = new ValidationData();
         $this->token = $this->create_token($payloads);
+        $this->iss = !empty($this->iss)?$this->iss:$this->host;
+        $this->aud = !empty($this->aud)?$this->iss:$this->host;
     }
 
     /****
@@ -60,8 +66,9 @@ class JWTBuilder
      */
     private function create_token($payloads=[]){
         $token =  $this->builder
-            ->issuedBy(request()->server('http_host')) // 令牌签发者 (iss claim)
-            ->permittedFor(request()->server('http_host')) // 令牌接收者 (aud claim)
+
+            ->issuedBy($this->iss) // 令牌签发者 (iss claim)
+            ->permittedFor($this->aud) // 令牌接收者 (aud claim)
             ->relatedTo($this->sub , true) //sub
             ->identifiedBy($this->jti, true) // Jwt唯一标识(jti claim),
             ->withHeader('alg',$this->alg_type)
@@ -78,14 +85,21 @@ class JWTBuilder
     protected function getConfigure(){
         $this->jti = StringHelper::create_rand_string(9);
         $this->host = request()->host();
-        $this->alg_type = 'HS256';
+        $this->alg_type = Config::get('login.JWT.alg');
         $this->time = time();
-        $this->nbf = 60;
-        $this->exp = 3600;
+        $this->nbf = Config::get('login.JWT.nbf');
+        $this->exp = Config::get('login.JWT.exp');
+        $this->iss = Config::get('login.JWT.iss');
+        $this->aud = Config::get('login.JWT.aud');
     }
     public static function parser($token){
-        $parser = new Parser();
-        return $parser->parse((string) $token);
+        try{
+            $parser = new Parser();
+            $result =  $parser->parse((string) $token);
+        }catch (\InvalidArgumentException $e){
+            $result = 420115; //没有检测到jwt数据，或者格式错误 ，jwt字符串必须带两个点
+        }
+        return $result;
     }
 
     /****
@@ -102,7 +116,7 @@ class JWTBuilder
         $data->setAudience($this->host);
         $sub=$token->getClaim('sub');
         if(!StringHelper::password($this->username."+".$this->userid,$sub)){
-            return 420113;
+            return 420114; //用户验证失败，请确认是您本人操作
         }
         $data->setSubject($sub);
         return $token->validate($data); // bool

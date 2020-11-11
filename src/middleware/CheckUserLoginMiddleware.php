@@ -36,23 +36,18 @@ class CheckUserLoginMiddleware{
         if(Config::get('login.JWT_login')==true){
             $token = $request->param(Config::get('login.token_name'));
             $parser = JWTBuilder::parser($token);
+            if(is_int($parser)){
+                JumpPage::jumpPage($parser)->send();
+            }
             $uid = $parser->getClaim('uid');
             $users = new $user();
             $username =$users::getFieldBy(1,'username');
             $check = new JWTBuilder($username,$uid);
             if(!$check->jwt_check($token)){
-                if(config('jumpPage.ajax')){
-                    JumpPage::jumpPage(420102)->send();
-                }else{
-                    JumpPage::jumpPage(420102,'/admin/login')->send();
-                }
-            }
-        }elseif (Session::get('user.id')==null){
-            if(config('jumpPage.ajax')){
-                JumpPage::jumpPage(420102)->send();
-            }else{
                 JumpPage::jumpPage(420102,'/admin/login')->send();
             }
+        }elseif (Session::get('user.id')==null){
+            JumpPage::jumpPage(420102,'/admin/login')->send();
         }
         return $next($request);
     }
