@@ -1,7 +1,7 @@
 # think-userlogin
 thinkphp用户登录模块
-* 用户登录
-* 用户注册
+>* 用户登录
+>* 用户注册
 >* 验证邮箱注册
   
 安装：composer require hahadu/think-userlogin
@@ -12,7 +12,9 @@ thinkphp用户登录模块
 
 做了用户名、密码、验证码的基本验证和登录成功后的session创建
 
-使用：在应用创建一个登录控制器
+使用：
+* 在应用创建一个登录控制器
+* 该控制器继承Hahadu\ThinkUserLogin\controller\BaseLoginController控制器
 
 ```php
 //用户登录模块控制器Login.php
@@ -29,10 +31,10 @@ class Login extends BaseLoginController
     public function login()
     {
         $result = parent::login();
-        if($result == 100003){
-            return 登录成功;
+        if($result['code'] == 100003){
+            return '登录成功';
         }else{
-            return 登录失败;
+            return '登录失败';
         }
     }
     public function logout()
@@ -48,28 +50,51 @@ class Login extends BaseLoginController
 
 ```
 ### 配置
-引入用户表
+##### 用户表配置
 * 在config/login.php配置登录信息
 ```php
 return [
-    'user_model'=> "\Hahadu\ImAdminThink\model\Users", //用户数据表模型路径
+    'user_model'=> "\app\model\Users", //用户数据表模型路径
     'JWT_login' =>true, //是否开启JWT鉴权 true 开启 false关闭
     'token_name' => 'token' //token表单字段名
 ];
 ```
-
-如需指定其他用户表只需在当前控制器中创建一个user_data()即可：
 ```php
-
-protected function user_data()
-    {
-        return Db::name('users'); //把users替换为你的表名
-    }
+//用户数据表说明
+/*
 用户表必须字段：
 用户名：username
 密码 ： password
 头像 ： avatar 
 头像为图片链接地址 
+*/
+```
+##### 邮箱验证注册
+
+```php
+
+    public function register(){
+        $result = parent::email_register();
+        if($result==100002){
+         return '注册成功';
+        }else
+            return  '注册失败';
+        }
+    }
+//在email_tpl方法中设置邮箱模板内容，
+//邮箱模板是一个数组，必须包含'title'和'content'
+//或者复制下面的方法到您的控制器中，按需修改即可
+    protected function email_tpl(){
+        return ['title'=>'欢迎注册，请查收验证码','content'=>'您好，感谢您的注册，您的验证码是: %s'];
+    }
+
+
+```
+获取邮箱验证码也是非常简单
+```html
+//获取邮箱验证码直接在模板文件中get当前控制器中的get_email_code方法即可
+ <a href={:url('get_email_code')}> 获取邮箱验证码</a>;
+
 ```
 如需自己定义验证码，只需按照tp6的验证码文档操作即可
 ```php

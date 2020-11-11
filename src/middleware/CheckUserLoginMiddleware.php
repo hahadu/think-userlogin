@@ -36,7 +36,7 @@ class CheckUserLoginMiddleware{
         $user = Config::get('login.user_model');
         $jwt = true;
         //验证是否登录
-        if(Config::get('login.JWT')==true){
+        if(Config::get('login.JWT_login')==true){
             $token = $request->param(Config::get('login.token_name'));
             $parser = JWTBuilder::parser($token);
             $uid = $parser->getClaim('uid');

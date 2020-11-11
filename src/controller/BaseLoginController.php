@@ -28,7 +28,6 @@ use think\facade\Session;
 class BaseLoginController
 {
     use BaseUsersTrait;
-   // protected $user_login_data;
     protected $middleware = [\think\middleware\SessionInit::class];
     protected $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     protected $mail_verify;
@@ -40,8 +39,7 @@ class BaseLoginController
         $this->mail_verify = StringHelper::create_rand_string(6,$this->chars);
         $this->user_database = Config::get('login.user_model');
         $this->users = $this->user_data();
-        $this->jwt = Config::get('login.JWT');
-       // $this->user_login_data = Db::name('users');
+        $this->jwt = Config::get('login.JWT_login');
     }
     public function login(){
         if(request()->isPost()){
@@ -76,14 +74,15 @@ class BaseLoginController
                             'code'=>100003,
                             'token'=> $token,
                         ];
-                        file_put_contents('token.txt',$token);
                         return $result;
                     }
                     if(Session::has('user') or $result){
-                        return 100003;
+                        $result['code'] = 100003;
+                        return $result;
                     }
                 }else{
-                    return 420103;
+                    $result['code'] = 420103;
+                    return $result;
                 }
         }
     }
@@ -103,6 +102,11 @@ class BaseLoginController
             return 402104;
         }
     }
+
+    /****
+     * 邮箱验证注册
+     * @return array|int|string
+     */
     public function email_register(){
         $data = request()->post();
         try{
@@ -135,8 +139,10 @@ class BaseLoginController
      */
     public function get_email_code(){
         $email = request()->post('email');
+        $mail_tpl = $this->email_tpl();
         $smtp = config('smtp');
-        if(send_email($email,'注册验证码',$this->mail_verify,$smtp)){
+        $content = sprintf($mail_tpl['content'],$this->mail_verify);
+        if(send_email($email,$mail_tpl['title'],$content,$smtp)){
             $hash = password_hash($this->mail_verify,PASSWORD_BCRYPT,['cost' => 12]);
             Session::set('email_verify.key',$hash);
             Session::set('email_verify.time',time());
@@ -144,6 +150,9 @@ class BaseLoginController
         }else{
             return 0;
         }
+    }
+    protected function email_tpl(){
+        return ['title'=>'欢迎注册，请查收验证码','content'=>'您好，感谢您的注册您的验证码是: %s'];
     }
 
 }

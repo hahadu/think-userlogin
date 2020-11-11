@@ -16,9 +16,6 @@
  **/
 
 namespace Hahadu\ThinkUserLogin\Traits;
-use Lcobucci\JWT\ValidationData;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
 use think\captcha\facade\Captcha;
 
 trait BaseUsersTrait
