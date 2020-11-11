@@ -26,8 +26,8 @@ class BaseUserLogin extends Validate
      * @var array
      */
     protected $message = [
-        'captcha.require' => '420109', //验证码必填
-        'captcha.captcha' => '420105', //验证码错误
+    //    'captcha.require' => '420109', //验证码必填
+    //    'captcha.captcha' => '420105', //验证码错误
         'username.require' => '420108', //用户名必填
         'password.require' => '420110', //密码必填
         'repassword.confirm' => '420111', //重复密码错误

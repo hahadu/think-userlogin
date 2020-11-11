@@ -39,7 +39,7 @@ class BaseLoginController
         $this->mail_verify = StringHelper::create_rand_string(6,$this->chars);
         $this->user_database = Config::get('login.user_model');
         $this->users = $this->user_data();
-        $this->jwt = Config::get('login.JWT_login');
+        $this->jwt_login = Config::get('login.JWT_login');
     }
     public function login(){
         if(request()->isPost()){
@@ -63,6 +63,7 @@ class BaseLoginController
                         'avatar'=>$data['avatar'],
                     );
                     $result = Session::set('user',$session);
+
 
                     if($this->jwt_login==true){
                         $payloads=[

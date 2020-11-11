@@ -34,7 +34,6 @@ class CheckUserLoginMiddleware{
      */
     public function handle($request, \Closure $next){
         $user = Config::get('login.user_model');
-        $jwt = true;
         //验证是否登录
         if(Config::get('login.JWT_login')==true){
             $token = $request->param(Config::get('login.token_name'));
