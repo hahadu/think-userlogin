@@ -70,7 +70,7 @@ class BaseLoginController
                             'uid'=>$data['id'],
                         ];
                         $jwt = new JWTBuilder($data['username'],$data['id'],$payloads);
-                        $token = $jwt->token;
+                        $token = (string) $jwt->token;
                         $result = [
                             'code'=>100003,
                             'token'=> $token,
