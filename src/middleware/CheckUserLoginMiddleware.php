@@ -17,8 +17,6 @@
 
 namespace Hahadu\ThinkUserLogin\middleware;
 use app\Request;
-use Hahadu\ImAdminThink\model\Users;
-use Lcobucci\JWT\Builder;
 use think\facade\Config;
 use think\facade\Session;
 use Hahadu\ThinkJumpPage\JumpPage;
@@ -44,14 +42,14 @@ class CheckUserLoginMiddleware{
             $check = new JWTBuilder($username,$uid);
             if(!$check->jwt_check($token)){
                 if(config('jumpPage.ajax')){
-                    return JumpPage::jumpPage(420102);
+                    JumpPage::jumpPage(420102)->send();
                 }else{
                     JumpPage::jumpPage(420102,'/admin/login')->send();
                 }
             }
         }elseif (Session::get('user.id')==null){
             if(config('jumpPage.ajax')){
-                return JumpPage::jumpPage(420102);
+                JumpPage::jumpPage(420102)->send();
             }else{
                 JumpPage::jumpPage(420102,'/admin/login')->send();
             }
