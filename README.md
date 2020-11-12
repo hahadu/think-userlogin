@@ -3,12 +3,17 @@ thinkphp用户登录模块
 >* 用户登录
 >* 用户注册
 >* 验证邮箱注册
+>* 验证用户登录
+>* 登录鉴权方式：session/cookie 或JWT 方式鉴权
+
   
 安装：composer require hahadu/think-userlogin
 
 依赖项 ： 
 >* thinkphp验证码模块 topthink/think-captcha
 >* 发送验证邮件 phpmailer/phpmailer
+>* 返码状态 hahadu/think-jump-class 
+
 
 做了用户名、密码、验证码的基本验证和登录成功后的session创建
 
@@ -40,7 +45,7 @@ class Login extends BaseLoginController
     public function logout()
     {
         $result = parent::logout();
-        if($result == 100004){
+        if($result['code'] == 100004){
             return '退出登录成功';
         }else{
             return '退出登录失败';
@@ -69,13 +74,25 @@ return [
 头像为图片链接地址 
 */
 ```
+##### 页面跳转配置
+```php
+//页面跳转遵循hahadu/think-jump-class 的跳转方式
+//
+return [
+    //是否开启ajax返回 true 开启/ false关闭
+    'ajax'=>true,
+    'ajax_type'=> 'jsonp', //支持json|jsonp|xml3种类型、开启ajax有效
+    //自定义跳转模板文件路径
+    'dispatch_tpl' => '' ,
+];
+```
 ##### 邮箱验证注册
 
 ```php
 
     public function register(){
         $result = parent::email_register();
-        if($result==100002){
+        if($result['code']==100002){
          return '注册成功';
         }else
             return  '注册失败';
