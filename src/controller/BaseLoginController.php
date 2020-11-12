@@ -47,7 +47,7 @@ class BaseLoginController
                 try{
                     validate(BaseUserLogin::class)->check($post_data);
                 }catch (ValidateException $e){
-                    return $e->getError();
+                    return wrap_msg_array($e->getMessage());
                 }
                 $map = [
                     'username' => $post_data['username'],
@@ -64,26 +64,23 @@ class BaseLoginController
                     );
                     $result = Session::set('user',$session);
 
-
                     if($this->jwt_login==true){
                         $payloads=[
                             'uid'=>$data['id'],
                         ];
-                        $jwt = new JWTBuilder($data['username'],$data['id'],$payloads);
+                        $jwt = new JWTBuilder($data['id'],$data['password'],$payloads);
                         $token = (string) $jwt->token;
                         $result = [
                             'code'=>100003,
                             'token'=> $token,
                         ];
-                        return $result;
+                        return wrap_msg_array(100003,'成功',[],$result);
                     }
                     if(Session::has('user') or $result){
-                        $result['code'] = 100003;
-                        return $result;
+                        return wrap_msg_array(100003,'登录成功');
                     }
                 }else{
-                    $result['code'] = 420103;
-                    return $result;
+                    return wrap_msg_array(420103,'账号密码错误');
                 }
         }
     }
@@ -96,11 +93,11 @@ class BaseLoginController
     public function logout(){
         Session::delete('user');
         if(!Session::has('user')){
-            return 100004;
+            return wrap_msg_array(100004,'注销成功');
         }else{
             Session::set('user',null);
             if(null !== Session::get('user'))
-            return 402104;
+            return wrap_msg_array(402104,'注销登录失败');
         }
     }
 
@@ -121,14 +118,14 @@ class BaseLoginController
         ];
         $check = $this->users::where($map)->findOrEmpty();
         if(!$check->isEmpty()){
-            $result = 420112; //用户名已存在
+            $result = wrap_msg_array(420112,'用户名已存在'); //用户名已存在
         }else{
             $data['password'] = StringHelper::password($data['password']);
             $data['last_login_ip'] = request()->ip();
             $data['register_time'] = time();
             $result = $this->users->addData($data);
             if($result){
-                $result = 100002; //注册成功
+                $result = wrap_msg_array(100002,'注册成功'); //注册成功
             }
         }
         return $result;
@@ -136,7 +133,7 @@ class BaseLoginController
 
     /****
      * 发送邮箱验证码到用户邮箱
-     * @return false|int|string|null
+     * @return array|false|string|null
      */
     public function get_email_code(){
         $email = request()->post('email');
@@ -147,9 +144,9 @@ class BaseLoginController
             $hash = password_hash($this->mail_verify,PASSWORD_BCRYPT,['cost' => 12]);
             Session::set('email_verify.key',$hash);
             Session::set('email_verify.time',time());
-            return $hash;
+            return wrap_msg_array(1,'成功');
         }else{
-            return 0;
+            return wrap_msg_array(0,'失败');
         }
     }
     protected function email_tpl(){

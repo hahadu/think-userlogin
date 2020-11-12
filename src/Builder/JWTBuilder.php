@@ -30,7 +30,7 @@ class JWTBuilder
     protected $validate;
     protected $host;
     protected $time;
-    protected $username;
+    protected $hash_key;
     protected $userid;
     private $jti;
     private $exp;
@@ -43,15 +43,15 @@ class JWTBuilder
 
     /****
      * JWTBuilder constructor.
-     * @param string $username 用户名 必须
-     * @param string $userid 用户id 必须
+     * @param int|string $userid 用户id 必须
+     * @param string $hash_key 加密字符串 必须 使用用户数据库中加密后的密码，如果密码更改则token失效
      * @param array $payloads payloads 的其他信息
      */
-    public function __construct($username,$userid,$payloads=[]){
+    public function __construct($userid, $hash_key, $payloads=[]){
         $this->getConfigure();
         $this->userid = $userid;
-        $this->username = $username;
-        $this->sub = StringHelper::password($username."+".$userid);
+        $this->hash_key = $hash_key;
+        $this->sub = StringHelper::password($hash_key."+".$userid);
         $this->builder = new  Builder();
         $this->parser = new Parser();
         $this->validate = new ValidationData();
@@ -109,17 +109,18 @@ class JWTBuilder
     public function jwt_check($token){
         $token = $this->parser->parse((string) $token); // Parses from a string
         $data = $this->validate; // It will use the current time to validate (iat, nbf and exp)
-        $data->setIssuer(request()->host());
-        $data->setAudience(request()->host());
+        $data->setIssuer($this->iss);
+        $data->setAudience($this->aud);
         $jti = $token->getHeader('jti');
         $data->setId($jti);
         $data->setAudience($this->host);
         $sub=$token->getClaim('sub');
-        if(!StringHelper::password($this->username."+".$this->userid,$sub)){
+        if(!StringHelper::password($this->hash_key."+".$this->userid,$sub)){
             return 420114; //用户验证失败，请确认是您本人操作
         }
         $data->setSubject($sub);
         return $token->validate($data); // bool
     }
+
 
 }

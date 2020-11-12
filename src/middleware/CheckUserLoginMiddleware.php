@@ -17,10 +17,10 @@
 
 namespace Hahadu\ThinkUserLogin\middleware;
 use app\Request;
+use Hahadu\ThinkUserLogin\validate\CheckHandle;
 use think\facade\Config;
 use think\facade\Session;
 use Hahadu\ThinkJumpPage\JumpPage;
-use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 
 
 
@@ -31,19 +31,11 @@ class CheckUserLoginMiddleware{
      * @return array|mixed|string
      */
     public function handle($request, \Closure $next){
-        $user = Config::get('login.user_model');
         //验证是否登录
         if(Config::get('login.JWT_login')==true){
             $token = $request->param(Config::get('login.token_name'));
-            $parser = JWTBuilder::parser($token);
-            if(is_int($parser)){
-                JumpPage::jumpPage($parser)->send();
-            }
-            $uid = $parser->getClaim('uid');
-            $users = new $user();
-            $username =$users::getFieldBy(1,'username');
-            $check = new JWTBuilder($username,$uid);
-            if(!$check->jwt_check($token)){
+            $check = CheckHandle::jwt_check($token);
+            if(!$check){
                 JumpPage::jumpPage(420102,'/admin/login')->send();
             }
         }elseif (Session::get('user.id')==null){
