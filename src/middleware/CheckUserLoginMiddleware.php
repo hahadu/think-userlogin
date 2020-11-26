@@ -36,10 +36,10 @@ class CheckUserLoginMiddleware{
             $token = $request->param(Config::get('login.token_name'));
             $check = CheckHandle::jwt_check($token);
             if(!$check){
-                JumpPage::jumpPage(420102,'/admin/login')->send();
+                JumpPage::jumpPage(420102,'login/index')->send();
             }
         }elseif (Session::get('user.id')==null){
-            JumpPage::jumpPage(420102,'/admin/login')->send();
+            JumpPage::jumpPage(420102,'login/index')->send();
         }
         return $next($request);
     }
