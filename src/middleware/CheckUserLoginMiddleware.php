@@ -31,15 +31,16 @@ class CheckUserLoginMiddleware{
      * @return array|mixed|string
      */
     public function handle($request, \Closure $next){
+        $login_url = null!==Config::get('login.login_url')?Config::get('login.login_url'):'login/index';
         //验证是否登录
         if(Config::get('login.JWT_login')==true){
             $token = $request->param(Config::get('login.token_name'));
             $check = CheckHandle::jwt_check($token);
             if(!$check){
-                JumpPage::jumpPage(420102,'login/index')->send();
+                JumpPage::jumpPage(420102,$login_url)->send();
             }
         }elseif (Session::get('user.id')==null){
-            JumpPage::jumpPage(420102,'login/index')->send();
+            JumpPage::jumpPage(420102,$login_url)->send();
         }
         return $next($request);
     }
