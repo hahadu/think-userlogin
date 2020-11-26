@@ -63,7 +63,7 @@ return [
     'login_url' =>'/admin/login', //用户需要登录时的跳转登录页面 /模块/控制器/方法
     'JWT_login' =>true, //是否开启JWT鉴权 true 开启 false关闭
     'token_name' => 'token',//token表单字段名
-    'JWT'=>[ //配置jwt
+    'JWT'=>[ //配置jwt 开启jwt有效
         'nbf'=> 1, //令牌生效开始时间 *距离令牌创建的时间
         'exp'=> 3600, //令牌过期时间 *距离令牌创建的时间
         'iss'=> request()->host(), //iss
