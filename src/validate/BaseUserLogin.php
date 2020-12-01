@@ -16,7 +16,8 @@ class BaseUserLogin extends Validate
         'email' => 'email',
         'password' => 'require|alphaNum',
         'repassword' =>  'confirm:password',
-        'email_verify' =>'checkEmailCode'
+        'email_verify' =>'checkEmailCode',
+        'sms_verify' =>'checkSmsCode',
     ];
 
     /**
@@ -32,11 +33,17 @@ class BaseUserLogin extends Validate
         'password.require' => '420110', //密码必填
         'repassword.confirm' => '420111', //重复密码错误
         'email_verify.checkEmailCode' => '420107', //邮箱验证失败
+        'sms_verify.checkSmsCode' => '420116', //短信验证失败
     ];
     // 自定义验证规则
     protected function checkEmailCode($value)
     {
         return password_verify($value,Session::get('email_verify.key')) ? true : 420107;
+    }
+    // 自定义验证规则
+    protected function checkSmsCode($value)
+    {
+        return password_verify($value,Session::get('sms_verify.key')) ? true : 420116; //短信验证失败
     }
 
 }

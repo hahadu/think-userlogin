@@ -18,6 +18,7 @@
 declare (strict_types = 1);
 
 namespace Hahadu\ThinkUserLogin\controller;
+use Hahadu\Helper\JsonHelper;
 use Hahadu\Helper\StringHelper;
 use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
@@ -25,18 +26,21 @@ use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
 use think\exception\ValidateException;
 use think\facade\Config;
 use think\facade\Session;
+use Hahadu\Sms\think\ThinkSmsClient;
 class BaseLoginController
 {
     use BaseUsersTrait;
     protected $middleware = [\think\middleware\SessionInit::class];
     protected $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     protected $mail_verify;
+    protected $sms_verify;
     protected $users;
     protected $jwt_login;
     private $user_database;
 
     public function __construct(){
         $this->mail_verify = StringHelper::create_rand_string(6,$this->chars);
+        $this->sms_verify = StringHelper::create_rand_string(4,'0123456789');
         $this->user_database = Config::get('login.user_model');
         $this->users = $this->user_data();
         $this->jwt_login = Config::get('login.JWT_login');
@@ -87,8 +91,7 @@ class BaseLoginController
 
     /****
      * 退出登录
-     *
-     *
+     * @return array
      */
     public function logout(){
         Session::delete('user');
@@ -130,10 +133,39 @@ class BaseLoginController
         }
         return $result;
     }
+    /****
+     * 短信验证注册
+     * @return array|int|string
+     */
+    public function sms_register(){
+        $data = request()->post();
+        try{
+            validate(BaseUserLogin::class)->check($data);
+        }catch (ValidateException $e){
+            return $e->getError();
+        }
+        //Session::delete('sms_verify');
+        $map = [
+            'username' => $data['username'],
+        ];
+        $check = $this->users::where($map)->findOrEmpty();
+        if(!$check->isEmpty()){
+            $result = wrap_msg_array(420112,'用户名已存在'); //用户名已存在
+        }else{
+            $data['password'] = StringHelper::password($data['password']);
+            $data['last_login_ip'] = request()->ip();
+            $data['register_time'] = time();
+            $result = $this->users->addData($data);
+            if($result){
+                $result = wrap_msg_array(100002,'注册成功'); //注册成功
+            }
+        }
+        return $result;
+    }
 
     /****
      * 发送邮箱验证码到用户邮箱
-     * @return array|false|string|null
+     * @return mixed
      */
     public function get_email_code(){
         $email = request()->post('email');
@@ -144,11 +176,30 @@ class BaseLoginController
             $hash = password_hash($this->mail_verify,PASSWORD_BCRYPT,['cost' => 12]);
             Session::set('email_verify.key',$hash);
             Session::set('email_verify.time',time());
-            return wrap_msg_array(1,'成功');
+            return json(wrap_msg_array(1,'成功'));
         }else{
-            return wrap_msg_array(0,'失败');
+            return json(wrap_msg_array(0,'失败'));
         }
     }
+    /****
+     * 发送短信验证码到用户手机
+     * @return array|false|string|null
+     */
+    public function get_sms_code(){
+        $phone = request()->post('phone');
+        $sms_verify = $this->sms_verify;
+        $send_data  = ["code"=>$sms_verify];
+        $send_sms = ThinkSmsClient::send_sms($phone,$send_data);
+        if(strtoupper($send_sms['Code'])==='OK'){
+            $hash = password_hash($sms_verify,PASSWORD_BCRYPT,['cost' => 12]);
+            Session::set('sms_verify.key',$hash);
+            Session::set('sms_verify.time',time());
+            return json(wrap_msg_array(1,'成功'));
+        }else{
+            return json(wrap_msg_array(0,$send_sms['Message']));
+        }
+    }
+
     protected function email_tpl(){
         return ['title'=>'欢迎注册，请查收验证码','content'=>'您好，感谢您的注册您的验证码是: %s'];
     }
