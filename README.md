@@ -4,6 +4,7 @@ thinkphp用户登录模块
 >* 用户注册
 >* 验证邮箱注册
 >* 验证用户登录
+>* 手机短信注册
 >* 登录鉴权方式：session/cookie 或JWT 方式鉴权
 
   
@@ -116,10 +117,11 @@ return [
 
 
 ```
-获取邮箱验证码也是非常简单
-```html
-//获取邮箱验证码直接在模板文件中get当前控制器中的get_email_code方法即可
- <a href={:url('get_email_code')}> 获取邮箱验证码</a>;
+获取邮箱或者短信验证码也是非常简单
+```javascript
+//获取注册验证码直接在模板文件中post请求到当前控制器中的get_email_code方法即可
+ $.post("{:url('get_email_code')}", {email: $email}, // 获取邮箱验证码;
+ $.post("{:url('get_sms_code')}", {phone: $phone}, // 获取短信验证码;
 
 ```
 如需自己定义验证码，只需按照tp6的验证码文档操作即可
