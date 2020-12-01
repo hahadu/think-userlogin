@@ -77,10 +77,12 @@ return [
 ```php
 //用户数据表说明
 /*
-用户表必须字段：
-用户名：username
-密码 ： password
-头像 ： avatar 
+用户表字段：
+用户名：username //必须
+密码 ： password //必须
+头像 ： avatar  //必须
+用户邮箱： email //可选 需要邮箱注册登录的场景可用
+用户手机： phone //可选 需要短信注册登录的场景可用
 头像为图片链接地址 
 */
 ```
