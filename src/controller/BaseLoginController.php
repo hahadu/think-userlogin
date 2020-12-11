@@ -128,7 +128,8 @@ class BaseLoginController
             $data['register_time'] = time();
             $result = $this->users->addData($data);
             if($result){
-                $result = wrap_msg_array(100002,'注册成功'); //注册成功
+                $register_id = ['uid'=>$result];
+                $result = wrap_msg_array(100002,'注册成功',$register_id); //注册成功
             }
         }
         return $result;
@@ -157,7 +158,8 @@ class BaseLoginController
             $data['register_time'] = time();
             $result = $this->users->addData($data);
             if($result){
-                $result = wrap_msg_array(100002,'注册成功'); //注册成功
+                $register_id = ['uid'=>$result];
+                $result = wrap_msg_array(100002,'注册成功',$register_id); //注册成功
             }
         }
         return $result;

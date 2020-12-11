@@ -119,6 +119,23 @@ return [
 
 
 ```
+##### 短信验证注册
+短信使用 [hahadu/sms](“htts://github.com/hahadu/sms”) 模块
+```php
+
+    public function register(){
+        $result = parent::sms_register();
+        if($result['code']==100002){
+         return '注册成功';
+        }else
+            return  '注册失败';
+        }
+    }
+
+
+
+
+```
 获取邮箱或者短信验证码也是非常简单
 ```javascript
 //获取注册验证码直接在模板文件中post请求到当前控制器中的get_email_code方法即可
