@@ -113,7 +113,7 @@ class BaseLoginController
         try{
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
-            return $e->getError();
+            return wrap_msg_array($e->getError(),'注册失败');
         }
         Session::delete('email_verify');
         $map = [
@@ -143,7 +143,7 @@ class BaseLoginController
         try{
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
-            return $e->getError();
+            return wrap_msg_array($e->getError(),'注册失败');
         }
         //Session::delete('sms_verify');
         $map = [
