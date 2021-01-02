@@ -145,6 +145,7 @@ class BaseLoginController
         }catch (ValidateException $e){
             return wrap_msg_array($e->getError(),'注册失败');
         }
+
         //Session::delete('sms_verify');
         $map = [
             'username' => $data['username'],
@@ -165,42 +166,6 @@ class BaseLoginController
         return $result;
     }
 
-    /****
-     * 发送邮箱验证码到用户邮箱
-     * @return mixed
-     */
-    public function get_email_code(){
-        $email = request()->post('email');
-        $mail_tpl = $this->email_tpl();
-        $smtp = config('smtp');
-        $content = sprintf($mail_tpl['content'],$this->mail_verify);
-        if(send_email($email,$mail_tpl['title'],$content,$smtp)){
-            $hash = password_hash($this->mail_verify,PASSWORD_BCRYPT,['cost' => 12]);
-            Session::set('email_verify.key',$hash);
-            Session::set('email_verify.time',time());
-            return json(wrap_msg_array(1,'成功'));
-        }else{
-            return json(wrap_msg_array(0,'失败'));
-        }
-    }
-    /****
-     * 发送短信验证码到用户手机
-     * @return array|false|string|null
-     */
-    public function get_sms_code(){
-        $phone = request()->post('phone');
-        $sms_verify = $this->sms_verify;
-        $send_data  = ["code"=>$sms_verify];
-        $send_sms = ThinkSmsClient::send_sms($phone,$send_data);
-        if(strtoupper($send_sms['Code'])==='OK'){
-            $hash = password_hash($sms_verify,PASSWORD_BCRYPT,['cost' => 12]);
-            Session::set('sms_verify.key',$hash);
-            Session::set('sms_verify.time',time());
-            return json(wrap_msg_array(1,'成功'));
-        }else{
-            return json(wrap_msg_array(0,$send_sms['Message']));
-        }
-    }
 
     protected function email_tpl(){
         return ['title'=>'欢迎注册，请查收验证码','content'=>'您好，感谢您的注册您的验证码是: %s'];
