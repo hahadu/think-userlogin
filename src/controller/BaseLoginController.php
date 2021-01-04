@@ -188,7 +188,7 @@ class BaseLoginController
         $userdata = $this->users->where($map);
         $check = $userdata->findOrEmpty()->isEmpty();
         if(!$check){
-            $re_password = $userdata->data(['password'=>$data['password']])->update();
+            $re_password = $userdata->data(['password'=>StringHelper::password($data['password'])])->update();
             if($re_password){
                 $result = wrap_msg_array(100011,'密码修改成功');
             }
