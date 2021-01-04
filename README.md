@@ -136,6 +136,13 @@ return [
 
 
 ```
+##### 修改密码
+```php
+  public function repassword(Request $request){
+     return $this->re_password($request);
+  }
+```
+
 获取邮箱或者短信验证码也是非常简单
 ```javascript
 //获取注册验证码直接在模板文件中post请求到当前控制器中的get_email_code方法即可
