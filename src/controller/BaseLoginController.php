@@ -23,10 +23,13 @@ use Hahadu\Helper\StringHelper;
 use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
+use think\Exception;
 use think\exception\ValidateException;
 use think\facade\Config;
 use think\facade\Session;
 use Hahadu\Sms\think\ThinkSmsClient;
+use think\Request;
+
 class BaseLoginController
 {
     use BaseUsersTrait;
@@ -141,6 +144,7 @@ class BaseLoginController
     public function sms_register(){
         $data = request()->post();
         try{
+            throw_unless($data['sms_verify'],'Exception','手机验证码不能为空');
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
             return wrap_msg_array($e->getError(),'注册失败');
@@ -166,6 +170,32 @@ class BaseLoginController
         return $result;
     }
 
+    /******
+     * 修改密码
+     * @param Request $request
+     */
+    public function re_password(Request $request){
+        $data = $request->post();
+        try {
+            throw_unless($data['sms_verify'],'think\exception\ValidateException','420109');
+            validate(BaseUserLogin::class)->check($data);
+        }catch (ValidateException $e){
+            return wrap_msg_array($e->getMessage());
+        }
+        $map['username'] = $data['username'];
+        $map['phone'] = $data['phone'];
+        $userdata = $this->users->where($map);
+        $check = $userdata->findOrEmpty()->isEmpty();
+        if(!$check){
+            $re_password = $userdata->data(['password'=>$data['password']])->update();
+            if($re_password){
+                $result = wrap_msg_array($re_password,'密码修改成功');
+            }
+        }else{
+            $result = wrap_msg_array(0,'密码修改失败');
+        }
+        return $result;
+    }
 
     protected function email_tpl(){
         return ['title'=>'欢迎注册，请查收验证码','content'=>'您好，感谢您的注册您的验证码是: %s'];
