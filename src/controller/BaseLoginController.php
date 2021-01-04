@@ -190,7 +190,7 @@ class BaseLoginController
         if(!$check){
             $re_password = $userdata->data(['password'=>$data['password']])->update();
             if($re_password){
-                $result = wrap_msg_array($re_password,'密码修改成功');
+                $result = wrap_msg_array(100011,'密码修改成功');
             }
         }else{
             $result = wrap_msg_array(0,'手机号或用户名不匹配');
