@@ -114,6 +114,7 @@ class BaseLoginController
     public function email_register(){
         $data = request()->post();
         try{
+            throw_unless($data['email_verify'],'Exception','邮箱验证码不能为空');
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
             return wrap_msg_array($e->getError(),'注册失败');
@@ -144,7 +145,7 @@ class BaseLoginController
     public function sms_register(){
         $data = request()->post();
         try{
-            throw_unless($data['sms_verify'],'Exception','手机验证码不能为空');
+            throw_unless($data['sms_verify'],'think\exception\ValidateException','420116');
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
             return wrap_msg_array($e->getError(),'注册失败');
@@ -177,7 +178,7 @@ class BaseLoginController
     public function re_password(Request $request){
         $data = $request->post();
         try {
-            throw_unless($data['sms_verify'],'think\exception\ValidateException','420109');
+            throw_unless($data['sms_verify'],'think\exception\ValidateException','420116');
             validate(BaseUserLogin::class)->check($data);
         }catch (ValidateException $e){
             return wrap_msg_array($e->getMessage());
@@ -192,7 +193,7 @@ class BaseLoginController
                 $result = wrap_msg_array($re_password,'密码修改成功');
             }
         }else{
-            $result = wrap_msg_array(0,'密码修改失败');
+            $result = wrap_msg_array(0,'手机号或用户名不匹配');
         }
         return $result;
     }
