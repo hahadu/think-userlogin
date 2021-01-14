@@ -20,6 +20,7 @@ declare (strict_types = 1);
 namespace Hahadu\ThinkUserLogin\controller;
 use Hahadu\Helper\JsonHelper;
 use Hahadu\Helper\StringHelper;
+use Hahadu\ThinkBaseModel\BaseModel;
 use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
@@ -37,6 +38,9 @@ class BaseLoginController
     protected $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     protected $mail_verify;
     protected $sms_verify;
+    /****
+     * @var BaseModel
+     */
     protected $users;
     protected $jwt_login;
     private $user_database;
@@ -59,7 +63,12 @@ class BaseLoginController
                 $map = [
                     'username' => $post_data['username'],
                 ];
-                $data = $this->users::where($map)->find();
+
+                $data = $this->users::where($map)->findOrEmpty();
+                if($data->isEmpty()){
+                    return wrap_msg_array('420113','用户名不存在');
+                }
+
                 if(is_object($data)){
                     $data = $data->toArray();
                 }
