@@ -44,7 +44,8 @@ class CheckUserLoginMiddleware{
                 'url' => trim($request->baseUrl(),'.'.config('route.url_html_suffix')),
                 'query' => $request->get(),
             ];
-            session('login.redirect',$redirect);
+            Session::delete('login');
+            Session::set('login.redirect',$redirect);
 
             JumpPage::jumpPage(420102,$login_url)->send();
         }
