@@ -41,7 +41,7 @@ class CheckUserLoginMiddleware{
             }
         }elseif (Session::get('user.id')==null){
             $redirect = [
-                'url' => $request->baseUrl(),
+                'url' => trim($request->baseUrl(),'.'.config('route.url_html_suffix')),
                 'query' => $request->get(),
             ];
             session('login.redirect',$redirect);
