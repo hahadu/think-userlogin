@@ -6,6 +6,7 @@ thinkphp用户登录模块
 >* 验证用户登录
 >* 手机短信注册
 >* 登录鉴权方式：session/cookie 或JWT 方式鉴权
+>* 支持登陆后跳转到登陆前请求页面
 
   
 安装：composer require hahadu/think-userlogin
@@ -14,6 +15,7 @@ thinkphp用户登录模块
 >* thinkphp验证码模块 topthink/think-captcha
 >* 发送验证邮件 phpmailer/phpmailer
 >* 返码状态 hahadu/think-jump-class 
+
 
 
 做了用户名、密码、验证码的基本验证和登录成功后的session创建

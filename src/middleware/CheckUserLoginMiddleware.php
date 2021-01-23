@@ -40,6 +40,12 @@ class CheckUserLoginMiddleware{
                 JumpPage::jumpPage(420102,$login_url)->send();
             }
         }elseif (Session::get('user.id')==null){
+            $redirect = [
+                'url' => $request->baseUrl(),
+                'query' => $request->get(),
+            ];
+            session('login.redirect',$redirect);
+
             JumpPage::jumpPage(420102,$login_url)->send();
         }
         return $next($request);

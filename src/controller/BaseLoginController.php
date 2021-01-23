@@ -18,17 +18,13 @@
 declare (strict_types = 1);
 
 namespace Hahadu\ThinkUserLogin\controller;
-use Hahadu\Helper\JsonHelper;
 use Hahadu\Helper\StringHelper;
-use Hahadu\ThinkBaseModel\BaseModel;
 use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
-use think\Exception;
 use think\exception\ValidateException;
 use think\facade\Config;
 use think\facade\Session;
-use Hahadu\Sms\think\ThinkSmsClient;
 use think\Request;
 
 class BaseLoginController
@@ -39,7 +35,7 @@ class BaseLoginController
     protected $mail_verify;
     protected $sms_verify;
     /****
-     * @var BaseModel
+     * @var \Hahadu\ThinkBaseModel\BaseModel
      */
     protected $users;
     protected $jwt_login;
