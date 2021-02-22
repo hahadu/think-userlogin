@@ -94,6 +94,8 @@ class BaseLoginController
                 }else{
                     return wrap_msg_array(420103,'账号密码错误');
                 }
+        }else{
+            return wrap_msg_array(0,'数据格式错误');
         }
     }
 
