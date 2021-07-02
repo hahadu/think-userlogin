@@ -92,6 +92,11 @@ class JWTBuilder
         $this->iss = Config::get('login.JWT.iss');
         $this->aud = Config::get('login.JWT.aud');
     }
+
+    /*****
+     * @param $token
+     * @return int|\Lcobucci\JWT\Token
+     */
     public static function parser($token){
         try{
             $parser = new Parser();

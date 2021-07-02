@@ -94,8 +94,9 @@ return [
 //
 return [
     //是否开启ajax返回 true 开启/ false关闭
+    //开启JWT鉴权时，ajax必须设置为true
     'ajax'=>true,
-    'ajax_type'=> 'jsonp', //支持json|jsonp|xml3种类型、开启ajax有效
+    'ajax_type'=> 'json', //支持json|jsonp|xml3种类型、开启ajax有效
     //自定义跳转模板文件路径
     'dispatch_tpl' => '' ,
 ];
