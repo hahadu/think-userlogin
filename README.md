@@ -125,6 +125,7 @@ return [
 ```
 ##### 短信验证注册
 短信使用 [hahadu/sms](“htts://github.com/hahadu/sms”) 模块
+近期短信模块重大升级，升级本模块后请务必修改短信木块的配置项！详情参考： htts://github.com/hahadu/sms
 ```php
 
     public function register(){
