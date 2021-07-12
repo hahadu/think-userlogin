@@ -5,7 +5,6 @@ namespace Hahadu\ThinkUserLogin\Traits;
 
 
 use Hahadu\Helper\StringHelper;
-use Hahadu\Sms\think\ThinkSmsClient;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
 use think\exception\ValidateException;
 use think\facade\Session;
