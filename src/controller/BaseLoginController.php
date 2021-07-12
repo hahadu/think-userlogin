@@ -21,6 +21,8 @@ namespace Hahadu\ThinkUserLogin\controller;
 use Hahadu\Helper\StringHelper;
 use Hahadu\ThinkUserLogin\Builder\JWTBuilder;
 use Hahadu\ThinkUserLogin\Traits\BaseUsersTrait;
+use Hahadu\ThinkUserLogin\Traits\EmailRegisterTrait;
+use Hahadu\ThinkUserLogin\Traits\SmsRegisterTrait;
 use Hahadu\ThinkUserLogin\validate\BaseUserLogin;
 use think\exception\ValidateException;
 use think\facade\Config;
@@ -30,6 +32,8 @@ use think\Request;
 class BaseLoginController
 {
     use BaseUsersTrait;
+    use EmailRegisterTrait;
+    use SmsRegisterTrait;
     protected $middleware = [\think\middleware\SessionInit::class];
     protected $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     protected $mail_verify;
@@ -114,69 +118,6 @@ class BaseLoginController
         }
     }
 
-    /****
-     * 邮箱验证注册
-     * @return array|int|string
-     */
-    public function email_register(){
-        $data = request()->post();
-        try{
-            throw_unless($data['email_verify'],'Exception','邮箱验证码不能为空');
-            validate(BaseUserLogin::class)->check($data);
-        }catch (ValidateException $e){
-            return wrap_msg_array($e->getError(),'注册失败');
-        }
-        Session::delete('email_verify');
-        $map = [
-            'username' => $data['username'],
-        ];
-        $check = $this->users::where($map)->findOrEmpty();
-        if(!$check->isEmpty()){
-            $result = wrap_msg_array(420112,'用户名已存在'); //用户名已存在
-        }else{
-            $data['password'] = StringHelper::password($data['password']);
-            $data['last_login_ip'] = request()->ip();
-            $data['register_time'] = time();
-            $result = $this->users->addData($data);
-            if($result){
-                $register_id = ['uid'=>$result];
-                $result = wrap_msg_array(100002,'注册成功',$register_id); //注册成功
-            }
-        }
-        return $result;
-    }
-    /****
-     * 短信验证注册
-     * @return array|int|string
-     */
-    public function sms_register(){
-        $data = request()->post();
-        try{
-            throw_unless($data['sms_verify'],'think\exception\ValidateException','420116');
-            validate(BaseUserLogin::class)->check($data);
-        }catch (ValidateException $e){
-            return wrap_msg_array($e->getError(),'注册失败');
-        }
-
-        //Session::delete('sms_verify');
-        $map = [
-            'username' => $data['username'],
-        ];
-        $check = $this->users::where($map)->findOrEmpty();
-        if(!$check->isEmpty()){
-            $result = wrap_msg_array(420112,'用户名已存在'); //用户名已存在
-        }else{
-            $data['password'] = StringHelper::password($data['password']);
-            $data['last_login_ip'] = request()->ip();
-            $data['register_time'] = time();
-            $result = $this->users->addData($data);
-            if($result){
-                $register_id = ['uid'=>$result];
-                $result = wrap_msg_array(100002,'注册成功',$register_id); //注册成功
-            }
-        }
-        return $result;
-    }
 
     /******
      * 修改密码

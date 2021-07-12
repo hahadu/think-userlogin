@@ -9,7 +9,7 @@
         "hahadu/think-jump-class": ">=3.1",
         "lcobucci/jwt": "^3.3",
         "phpmailer/phpmailer": "^6.1",
-        "hahadu/sms": ">=0.1.1"
+        "hahadu/sms": "^1.0"
     },
     "license": "Apache-2.0",
     "authors": [

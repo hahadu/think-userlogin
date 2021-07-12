@@ -11,9 +11,10 @@ thinkphp用户登录模块
   
 安装：composer require hahadu/think-userlogin
 
-依赖项 ： 
+默认安装依赖项 ： 
 >* thinkphp验证码模块 topthink/think-captcha
 >* 发送验证邮件 phpmailer/phpmailer
+>* 发送验证短信 hahadu/sms
 >* 返码状态 hahadu/think-jump-class 
 
 

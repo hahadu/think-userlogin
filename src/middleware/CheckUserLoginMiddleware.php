@@ -23,7 +23,6 @@ use think\facade\Session;
 use Hahadu\ThinkJumpPage\JumpPage;
 
 
-
 class CheckUserLoginMiddleware{
     /****
      * @param Request $request
