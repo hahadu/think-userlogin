@@ -9,19 +9,43 @@ thinkphp用户登录模块
 >* 支持登陆后跳转到登陆前请求页面
 
   
-安装：composer require hahadu/think-userlogin
-
-默认安装依赖项 ： 
+### 安装：
+```
+composer require hahadu/think-userlogin
+```
+#### 默认安装依赖项 ：
 >* thinkphp验证码模块 topthink/think-captcha
 >* 发送验证邮件 phpmailer/phpmailer
 >* 发送验证短信 hahadu/sms
->* 返码状态 hahadu/think-jump-class 
+>* 返码状态 hahadu/think-jump-class
 
+#### 创建用户数据表(可选)
+##### 1.配置config/console.php
+```php
+return [
+    // 指令定义
+    'commands' => [
+        'createUser' => \Hahadu\ThinkUserLogin\Command\CreateUser::class,
+    ],
+```
+##### 2.命令行指令说明
+```shell
+   php think createUser
+   or
+   php think createUser [ModelName] --username=username --password=password
+```
+* ModelName 用户表的名称 默认为users 如果在数据库配置文件中设置了表前缀则会自动加入表前缀
+* --username 用户名，默认为admin
+* --password 用户密码 默认随机生成
+```shell
+   php think createUser users --username=admin --password=123456
+```
+* 以上指令会创建一个名为user的数据表，并创建一条用户名为admin 密码为123456的用户数据
+* 如果用户存在则更新用户密码
 
+项目做了用户名、密码、验证码的基本验证和登录成功后的session创建
 
-做了用户名、密码、验证码的基本验证和登录成功后的session创建
-
-使用：
+### 使用：
 * 在应用创建一个登录控制器
 * 该控制器继承Hahadu\ThinkUserLogin\controller\BaseLoginController控制器
 
